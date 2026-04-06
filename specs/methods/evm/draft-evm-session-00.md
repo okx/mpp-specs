@@ -161,35 +161,35 @@ The client pays exactly for tokens received, with no worst-case reservation.
 
 Streaming Payment Channel
 : A unidirectional off-chain payment mechanism where the
-  payer deposits funds into an escrow contract and signs
-  cumulative vouchers authorizing increasing amounts.
+payer deposits funds into an escrow contract and signs
+cumulative vouchers authorizing increasing amounts.
 
 Voucher
 : An {{EIP-712}} signed message authorizing a cumulative
-  payment amount for a specific channel. Vouchers are
-  monotonically increasing in amount.
+payment amount for a specific channel. Vouchers are
+monotonically increasing in amount.
 
 Channel
 : A payment relationship between a payer and payee, identified by a
-  unique `channelId`. The channel holds deposited funds and tracks
-  cumulative settlements.
+unique `channelId`. The channel holds deposited funds and tracks
+cumulative settlements.
 
 Settlement
 : The on-chain {{ERC-20}} transfer that converts off-chain voucher
-  authorizations into actual token movement.
+authorizations into actual token movement.
 
 Authorized Signer
 : An address delegated to sign vouchers on behalf of the payer. Defaults
-  to the payer if not specified.
-  In this specification, voucher signatures are ECDSA
-  secp256k1 signatures produced by an EOA-style signer.
-  Contract accounts that cannot produce such signatures MUST
-  delegate an `authorizedSigner`.
+to the payer if not specified.
+In this specification, voucher signatures are ECDSA
+secp256k1 signatures produced by an EOA-style signer.
+Contract accounts that cannot produce such signatures MUST
+delegate an `authorizedSigner`.
 
 Base Units
 : The smallest indivisible unit of an ERC-20 token, determined by the
-  token's decimal precision. For example, USDC (6 decimals) uses
-  1,000,000 base units per 1 USDC.
+token's decimal precision. For example, USDC (6 decimals) uses
+1,000,000 base units per 1 USDC.
 
 # Session Flow
 
@@ -653,10 +653,10 @@ functions that accept voucher signatures (`settle`, `close`):
 
 2. **Authorized signer verification**: The contract MUST recover the
    signer address from the EIP-712 signature and verify it matches:
-   - `channel.authorizedSigner` if non-zero
-   - Otherwise `channel.payer`
-   Contract accounts that cannot produce secp256k1 ECDSA signatures
-   MUST configure `authorizedSigner` to an EOA-style signer.
+    - `channel.authorizedSigner` if non-zero
+    - Otherwise `channel.payer`
+      Contract accounts that cannot produce secp256k1 ECDSA signatures
+      MUST configure `authorizedSigner` to an EOA-style signer.
 
 3. **Domain binding**: The contract MUST use its own address as
    `verifyingContract` in the EIP-712 domain separator, ensuring
@@ -1286,12 +1286,12 @@ On `action="open"`, servers MUST:
 3. Verify that this execution created or initialized the specific
    `payload.channelId`
 4. Query the escrow contract to verify channel state:
-   - Channel exists with the provided `channelId`
-   - `channel.payee` matches server's address
-   - `channel.token` matches `request.currency`
-   - `channel.deposit - channel.settled >= amount`
-   - Channel is not finalized
-   - `channel.closeRequestedAt == 0` (no pending close)
+    - Channel exists with the provided `channelId`
+    - `channel.payee` matches server's address
+    - `channel.token` matches `request.currency`
+    - `channel.deposit - channel.settled >= amount`
+    - Channel is not finalized
+    - `channel.closeRequestedAt == 0` (no pending close)
 5. Verify the initial voucher signature (see {{voucher-verification}})
 6. Initialize server-side accounting state
 
@@ -1334,11 +1334,11 @@ On `action="voucher"`, servers MUST:
 2. Verify `channel.closeRequestedAt == 0` (no pending close).
    Reject vouchers on channels with a pending forced close.
 3. If `deposit` field is present, process deposit first:
-   - Call `openWithAuthorization` or `topUpWithAuthorization`
-   - Verify updated channel state
+    - Call `openWithAuthorization` or `topUpWithAuthorization`
+    - Verify updated channel state
 4. Verify monotonicity:
-   - `cumulativeAmount > highestVoucherAmount`
-   - `(cumulativeAmount - highestVoucherAmount) >= minVoucherDelta`
+    - `cumulativeAmount > highestVoucherAmount`
+    - `(cumulativeAmount - highestVoucherAmount) >= minVoucherDelta`
 5. Verify `cumulativeAmount <= channel.deposit` (ensures the
    settlement delta `cumulativeAmount - channel.settled` does not
    exceed available funds `channel.deposit - channel.settled`)
